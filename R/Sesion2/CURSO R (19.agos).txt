@@ -1,0 +1,75 @@
+#foreign
+install.packages("foreign")
+require (foreign)
+sociodem <- read.dbf ("C://Users//SALA-C6//Desktop//SDEMT215.dbf")
+table (sociodem$SEX)
+#1. Frecuencias
+ #1.1  Frecuencias con datos muestrales (sin ponderar)
+
+wtd.table(SDEMT215$POS_OCU)
+wtd.table(SDEMT215$POS_OCU,na.show = TRUE)
+
+#frecuencia datos ponderados
+wtd.table(SDEMT215$POS_OCU,weights=SDEMT215$FAC,na.show = TRUE)
+
+#Tabulados con datos muestrales (sin ponderar)
+          
+wtd.table(SDEMT215$SEX,SDEMT215$POS_OCU)
+wtd.table(SDEMT215$POS_OCU,weights=SDEMT215$FAC,na.show = TRUE)
+
+#2.2  Tabulados con datos ponderados
+wtd.table(SDEMT215$SEX,SDEMT215$POS_OCU,weights=SDEMT215$FAC)
+
+#3.1  Etiquetar en otra variable
+            SDEMT215$SEXO <- factor(SDEMT215$SEX,levels = c(1,2),labels = c("Hombre", "Mujer"))
+            wtd.table(SDEMT215$SEXO)
+      
+      #3.2  Etiquetar en la misma variable
+            SDEMT215$POS_OCU <- factor(SDEMT215$POS_OCU,levels = c(1,2,3,4,5),labels = c("Subordinados y remunerados", "Empleadores","Cuenta propia", "Sin pago","NE"))
+            wtd.table(SDEMT215$POS_OCU)
+
+
+
+######Recodificion de variables numericas (rangos) ###########################
+#Metodo 1
+SDEMT215$EDAD11[as.numeric(SDEMT215$EDA) >= 0 & as.numeric(SDEMT215$EDA)<=10] <- 1
+SDEMT215$EDAD11[as.numeric(SDEMT215$EDA) >= 11 & as.numeric(SDEMT215$EDA)<=20] <- 2
+SDEMT215$EDAD11[as.numeric(SDEMT215$EDA) >= 21 & as.numeric(SDEMT215$EDA)<=30] <- 3
+SDEMT215$EDAD11[as.numeric(SDEMT215$EDA) >= 31 & as.numeric(SDEMT215$EDA)<=40] <- 4
+SDEMT215$EDAD11[as.numeric(SDEMT215$EDA) >= 41] <- 5     
+ls(SDEMT215) ##LISTA DE VARIABLES 
+table (SDEMT215$EDAD11)
+
+
+########################## Recodificion de variables tipo caracter #################
+SDEMT215$VALIDO[as.character(SDEMT215$R_DEF)!="00"] <- "Entrevista incompleta"
+SDEMT215$VALIDO[as.character(SDEMT215$R_DEF)=="00"] <- "Entrevista completa"
+
+
+################Subconjunto de datos
+
+##3 Seleccionando variables de interes
+
+var<-c("R_DEF", "LOC", "MUN","C_RES")
+newdata1 <- SDEMT215[,var]
+
+#### seleccionar casos u observaciones
+#### funcion... subset()
+
+help (subset)
+
+mujer <- subset (SDEMT215,SDEMT215$SEX == 2 )
+table (mujer$SEX)
+mujer$CD_A <- as.character(mujer$CD_A)
+mujer1 <- subset (mujer, mujer$CD_A == "02" | mujer$CD_A == "16")
+table (mujer1$CD_A)
+
+
+#################### exportar  ########################3
+install.packages("questionr")
+require(questionr)
+c1<- wtd.table(sdemt215$SEX, weights = sdemt215$FAC)
+table(c1)
+write.csv(c1,file="C:\\Users\\EDITH VELAZQUEZ\\Desktop\\PEA.csv")
+
+################## graficas ###################3
